@@ -14,7 +14,9 @@ function total(frm) {
 
 frappe.ui.form.on('Purchase Invoice', {
     refresh: function (frm) {
-        custom_button(frm);
+        custom_button(frm,frm.doc.total_amount);
+        frm.set_value("date",frappe.datetime.now_date());
+        frm.set_value("duedate",frappe.datetime.add_months(frappe.datetime.now_date(),1));
         frm.set_query("supplier", function () {
             return {
                 filters: {

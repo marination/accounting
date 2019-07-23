@@ -2,9 +2,12 @@
 # Copyright (c) 2019, frappe and Contributors
 # See license.txt
 from __future__ import unicode_literals
-
-# import frappe
+import frappe
 import unittest
 
 class TestPaymentEntryTable(unittest.TestCase):
-	pass
+	def setUp(self):
+		pass
+		
+	def tearDown(self):
+		pass

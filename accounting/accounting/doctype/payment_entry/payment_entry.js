@@ -14,5 +14,9 @@ frappe.ui.form.on('Payment Entry', {
    },
    refresh: function(frm){
     custom_button(frm);
+    frm.set_value("date",frappe.datetime.now_date())
    }
+  //  total_amount: function(frm){
+
+  //  }
 });

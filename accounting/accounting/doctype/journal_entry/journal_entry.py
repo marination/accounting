@@ -8,18 +8,24 @@ from frappe import _
 from frappe.model.document import Document
 from accounting.accounting.account_update import balance_account_je
 
+class InadequateEntriesError(frappe.ValidationError): pass
+
+class DebitCreditError(frappe.ValidationError): pass
+
 class JournalEntry(Document):
 	def validate(self):
 		for i in self.get("transaction"):
 			if i.debit>0 and i.credit>0:
-				frappe.throw(_("Cannot debit and credit from the same account at once"))
+				frappe.throw(_("Cannot debit and credit from the same account at once"),DebitCreditError)
+
 		if len(self.get("transaction"))	<=1 :
-			frappe.throw(_("Need minimum two entries"))
+			frappe.throw(_("Need minimum two entries"),InadequateEntriesError)
 
 		if self.difference < 0:
 			frappe.throw(_("Total debit must be equal to total credit. The difference is {}".format(self.difference)))
 
 	def on_submit(self):
+		transaction
 		for i in self.get("transaction"):
 			balance_account_je(i.account,i.credit,i.debit)
 			self.make_gl_entry(i.account,i.credit,i.debit,i.party)

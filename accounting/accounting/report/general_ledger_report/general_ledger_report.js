@@ -30,12 +30,6 @@ frappe.query_reports["General Ledger Report"] = {
 				"fieldname":"transaction_no",
 				"label": __("Transaction No."),
 				"fieldtype": "Data"
-				},
-				{
-				"fieldname":"party",
-				"label": __("Party"),
-				"fieldtype": "Link",
-				"options": "Party",
-},
+				}
 	]
 };

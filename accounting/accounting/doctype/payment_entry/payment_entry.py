@@ -4,10 +4,17 @@
 
 from __future__ import unicode_literals
 import frappe
+from frappe import _
 from frappe.model.document import Document
+from frappe.utils import flt
 from accounting.accounting.account_update import balance_account
 
+class OverbillingError(frappe.ValidationError): pass
+
 class PaymentEntry(Document):
+	def validate(self):
+		self.overbilling_error()
+
 	def on_submit(self):
 		balance_account(self.pay_from,self.pay_to,self.amount)
 		self.make_gl_entry(self.pay_from,self.pay_to)
@@ -15,6 +22,12 @@ class PaymentEntry(Document):
 	def on_cancel(self):
 		balance_account(self.pay_to,self.pay_from,self.amount)
 		self.make_gl_entry(self.pay_to,self.pay_from)
+
+	def overbilling_error(self):
+		doc = frappe.get_doc(self.transaction,self.transaction_name)
+		if flt(self.amount) > flt(doc.total_amount) or flt(self.amount) <= 0 :
+			frappe.throw(_("Please specify a proper amount . Amount must be lesser than invoice amount, non zero and non negative."), OverbillingError)
+			
 
 	def make_gl_entry(self,pay_from,pay_to):
 		generalLedger =[{
@@ -44,3 +57,6 @@ class PaymentEntry(Document):
 		for row in generalLedger:
 			doc = frappe.get_doc(row)
 			doc.insert()
+
+
+	
